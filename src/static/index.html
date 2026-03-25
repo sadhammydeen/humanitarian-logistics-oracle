@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humanitarian Platform Demo</title>
+    <style>
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        h1 { text-align: center; color: #1a365d; margin-bottom: 5px; }
+        h3 { color: #2b6cb0; }
+        p.subtitle { text-align: center; color: #718096; font-size: 1.1em; margin-bottom: 40px; }
+        .section { margin-top: 30px; padding: 30px; border-radius: 10px; background-color: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        h2 { color: #2d3748; border-bottom: 3px solid #3182ce; padding-bottom: 10px; display: inline-block; }
+        
+        /* Vision Demo */
+        .vision-container { display: flex; justify-content: space-between; margin-top: 25px; gap: 20px; }
+        .vision-box { text-align: center; width: 48%; }
+        .vision-box img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e2e8f0; }
+        
+        /* Spatial Oracle */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #4a5568; }
+        input { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s; }
+        input:focus { outline: none; border-color: #3182ce; }
+        
+        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
+        button { flex: 1; color: white; border: none; padding: 14px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.2s, transform 0.1s; }
+        button:active { transform: translateY(1px); }
+        
+        .btn-valid { background-color: #38a169; }
+        .btn-valid:hover { background-color: #2f855a; }
+        
+        .btn-spoof { background-color: #e53e3e; }
+        .btn-spoof:hover { background-color: #c53030; }
+        
+        #response-box { margin-top: 25px; padding: 20px; background: #edf2f7; border-radius: 8px; font-family: 'Courier New', monospace; white-space: pre-wrap; min-height: 80px; font-size: 15px; border: 1px dashed #cbd5e0; }
+        .success-res { background: #f0fff4 !important; color: #276749; border: 1px solid #c6f6d5 !important; }
+        .error-res { background: #fff5f5 !important; color: #9b2c2c; border: 1px solid #fed7d7 !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Humanitarian Logistics Demo</h1>
+        <p class="subtitle">Integration Dashboard: Computer Vision & Spatial GPS Oracle</p>
+
+        <!-- Vision Section -->
+        <div class="section">
+            <h2>1. Night-Vision (CLAHE processing)</h2>
+            <p>To identify objects in dark disaster zones, we pipe raw imagery through a CLAHE script before feeding it to our YOLOv8 AI. This dramatically improves clarity.</p>
+            <div class="vision-container">
+                <div class="vision-box">
+                    <h3>Raw Low-Light Photo</h3>
+                    <!-- Loads image #1 we downloaded -->
+                    <img src="/data/raw/wiki_001.jpg" alt="Raw Image" onerror="this.src='https://via.placeholder.com/400x300?text=No+Raw+Image'">
+                </div>
+                <div class="vision-box">
+                    <h3>CLAHE Processed</h3>
+                    <!-- Loads processed image #1 -->
+                    <img src="/data/processed/clahe_wiki_001.jpg" alt="Processed Image" onerror="this.src='https://via.placeholder.com/400x300?text=No+Processed+Image'">
+                </div>
+            </div>
+        </div>
+
+        <!-- Spatial Section -->
+        <div class="section">
+            <h2>2. Anti-Spoofing GPS Backend</h2>
+            <p>Our server enforces physical presence using the Haversine equation. To prove delivery to the NGO warehouse (Lat: 12.8236, Lon: 80.0435), the phone's GPS data is verified via Event-Driven API. Spoofed coordinates fail instantly.</p>
+            
+            <div class="form-group">
+                <label>Smartphone Latitude Payload</label>
+                <input type="text" id="lat" value="12.8237">
+            </div>
+            <div class="form-group">
+                <label>Smartphone Longitude Payload</label>
+                <input type="text" id="lon" value="80.0436">
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-valid" onclick="sendDelivery()">Transmit Valid GPS (Inside 0.5km)</button>
+                <button class="btn-spoof" onclick="setSpoofAndSend()">Simulate Hacker (Chennai Central)</button>
+            </div>
+            
+            <div id="response-box">Awaiting API transmission...</div>
+        </div>
+    </div>
+
+    <script>
+        function setSpoofAndSend() {
+            document.getElementById('lat').value = "13.0827";
+            document.getElementById('lon').value = "80.2707";
+            sendDelivery();
+        }
+
+        async function sendDelivery() {
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lon = parseFloat(document.getElementById('lon').value);
+            const resBox = document.getElementById('response-box');
+            resBox.className = '';
+            resBox.innerText = "Transmitting to Oracle Backend...";
+
+            const payload = {
+                device_id: "demo_browser_truck",
+                latitude: lat,
+                longitude: lon,
+                timestamp: new Date().toISOString(),
+                image_hash: "abcd_1234_hash"
+            };
+
+            try {
+                // Post to the FastAPI backend running on the same server
+                const response = await fetch('/verify-delivery', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resBox.innerText = `✅ [200 OK] APPROVED.\n${data.message}\nDistance Calculated: ${data.distance_km.toFixed(3)} km`;
+                    resBox.className = 'success-res';
+                } else {
+                    resBox.innerText = `❌ [403 FORBIDDEN] BLOCKED.\nHacker intercepted!\nReason: ${data.detail}`;
+                    resBox.className = 'error-res';
+                }
+            } catch (e) {
+                resBox.innerText = "API Error: Ensure the FastAPI server is running.";
+            }
+        }
+    </script>
+</body>
+</html>

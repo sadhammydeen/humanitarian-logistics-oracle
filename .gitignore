@@ -1,0 +1,23 @@
+# Virtual Environments
+venv/
+env/
+.env
+
+# Python Caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Specific
+.DS_Store
+
+# Large Data & AI Models
+data/raw/
+data/processed/
+*.pt
+*.onnx
+*.weights
+
+# React Native / Node
+node_modules/
+.expo/
