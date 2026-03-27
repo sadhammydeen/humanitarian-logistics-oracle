@@ -65,7 +65,7 @@ export default function LocationScanner({ deviceId, imageHash }) {
         latitude: lat,
         longitude: lon,
         timestamp: new Date().toISOString(),
-        image_hash: imageHash || "mock_hash_abc123" // Tied to the YOLOv8 captured unbranded photo
+        image_hash: imageHash || "mock_hash_abc123" // Tied to the MobileNetV2 classified donation photo
       };
 
       const response = await fetch(BACKEND_URL, {

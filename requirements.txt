@@ -3,4 +3,12 @@ uvicorn
 redis
 pydantic
 opencv-python
-ultralytics
+torch
+torchvision
+Pillow
+scikit-learn
+matplotlib
+numpy
+requests
+python-multipart
+kaggle

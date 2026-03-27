@@ -1,60 +1,69 @@
-# Physical Oracle Protocol for Humanitarian Logistics
+# Humanitarian Logistics Verification Platform
 
-This repository contains the core software architecture for a logistics tracking and verification system designed for disaster relief and humanitarian aid scenarios. 
+A secure, automated verification system for in-kind humanitarian donations using lightweight computer vision and geospatial validation. Designed to operate on standard mobile devices in resource-constrained NGO environments.
 
-The project solves two primary issues in the field:
-1. **Low-Visibility Computer Vision:** Using CLAHE to dynamically enhance images from dark or night-time disaster zones before they are passed into a YOLOv8 object detection model.
-2. **The "Physical Oracle Problem" (GPS Spoofing):** Securing the delivery of critical aid by preventing malicious actors from spoofing their GPS coordinates. This is achieved using an Event-Driven API backend that cross-references hardware-level locations using the Haversine equation.
+## 🏗️ Architecture
 
-## 🛠️ Tech Stack Architecture
-- **Web/API:** FastAPI (Python)
-- **Queuing:** Redis 
-- **Computer Vision:** OpenCV (CLAHE), YOLOv8 
-- **Mobile Frontend Concept:** React Native (simulating NMEA 0183 extraction)
-- **Visualization:** Integrated HTML/JS Dashboard Server
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Visual Verification** | MobileNetV2 (~3.5M params) | Classify donations as Food, Clothing, or Medicine |
+| **Low-Light Enhancement** | CLAHE (LAB L* channel) | Improve classification accuracy in dark warehouses |
+| **Geospatial Validation** | Haversine Formula (50m threshold) | Verify delivery location via great-circle distance |
+| **Cryptographic Integrity** | SHA-256 Hash | Non-repudiation of verification events |
+| **Verification Metric** | Transparency Score | `TS = 0.5 × geo_score + 0.5 × visual_score` |
+| **Backend** | FastAPI + Redis | Event-driven API with queuing |
+| **Mobile Client** | React Native | High-accuracy GPS extraction |
 
 ---
 
 ## 🚀 Getting Started
 
-To launch the integrated backend and the live dashboard:
-
 ```bash
-# Ensure you are in the project root folder
+# From the project root
 cd /Users/sadhammydeen/Documents/humanitarian_logistics/
 
-# Run the provided Bash script (automatically installs dependencies and boots FastAPI)
+# Launch the backend (installs deps + starts FastAPI)
 ./start_backend.sh
 ```
 
-Once running, navigate to `http://localhost:8000` in your web browser to view the **Interactive Project Demo Dashboard**.
+Navigate to `http://localhost:8000` for the interactive verification dashboard.
 
 ---
 
-## 📂 Project Structure & Scripts
+## 📂 Project Structure
 
-The following modules were developed across Phase 1 and Phase 2:
+### Data Engineering & Computer Vision
+* **`src/mobilenet_classifier.py`**
+  MobileNetV2 classification module using depthwise separable convolutions and inverted residual blocks. Maps ImageNet-1K classes to humanitarian categories (Food, Clothing, Medicine) with integrated CLAHE preprocessing. Completes inference in <5 seconds on mobile CPU.
 
-### 1. Data Engineering & Computer Vision Constraints
-* **`src/download_dataset.py`** 
-  Automates the scraping of raw humanitarian aid photos (rice sacks, medicine boxes) via the Wikimedia Commons API to bypass rate limits and build the baseline Custom Dataset for YOLOv8.
-* **`src/clahe_enhancer.py`** 
-  Applies **Contrast Limited Adaptive Histogram Equalization**. It algorithmically sharpens and rescues details in dark/low-light images to dramatically improve AI prediction accuracy.
+* **`src/clahe_enhancer.py`**
+  Contrast Limited Adaptive Histogram Equalization applied exclusively to the L* (lightness) channel of the LAB color space. Enhances contrast while preserving original hue and saturation — preventing color distortion that would confuse CNN classification.
 
-### 2. The Spatial Oracle Backend
+* **`src/download_dataset.py`**
+  Automated dataset acquisition via Wikimedia Commons API for humanitarian aid images.
+
+### Spatial Oracle Backend
 * **`src/main.py`**
-  The Event-Driven FastAPI server that handles incoming delivery pings. It contains the core **Haversine formula algorithm** to block Fake GPS apps by computing the exact terrestrial distance between the truck and the designated NGO node. Transactions >0.5km away are rejected with a `403 Forbidden` error.
-* **`src/mobile/LocationScanner.js`**
-  The conceptual React Native client for the truck driver. It legally intercepts the OS-level High-Accuracy location (to mitigate standard mock location overlays) and safely transmits it.
+  Event-driven FastAPI server implementing:
+  - **Haversine formula** for great-circle distance calculation (50m threshold)
+  - **Transparency Score** = 0.5 × geo_score + 0.5 × visual_score
+  - **SHA-256 cryptographic hash** for non-repudiation of verification events
+  - **`/classify-image`** endpoint for real-time MobileNetV2 donation classification
 
-### 3. Verification & Experiments
-* **`src/test_spatial.py` (Experiment B)**
-  A simulation script proving the security infrastructure. It tests a valid truck delivery, followed by a simulated hacker attack from roughly ~40km away, successfully guaranteeing a 100% Mock Location Block Rate.
-* **`src/experiment_c_efficiency.py` (Experiment C)**
-  A raw statistical benchmark comparing human-level verification workflows (baseline ~45s per truck) against the system's automated processing APIs (~0.09s total execution). This mathematically proves huge efficiency gains for logistics coordinators.
+* **`src/mobile/LocationScanner.js`**
+  React Native client extracting high-accuracy GPS coordinates for delivery verification.
+
+### Experiments
+* **`src/experiment_a_vision.py`** — Tests CLAHE efficacy: baseline vs CLAHE-enhanced MobileNetV2 accuracy with confusion matrices and Mean Average Precision tracking (target: ≥88%).
+
+* **`src/test_spatial.py`** — GPS spoofing attack simulation proving 100% block rate via Haversine validation.
+
+* **`src/experiment_c_efficiency.py`** — End-to-end latency benchmark across 50 trials targeting sub-3.5s processing, compared against 24-hour manual NGO verification baseline.
 
 ---
 
-## 📊 Core Metrics Reached
-- **Spatial Security:** 100% successful block rate against simulated Mock Location GPS payload attacks.
-- **Logistics Efficiency:** Proven to be >48,000x faster than theoretical baseline manual verification. Simulated load tests cleared 100 convoy trucks in 0.09 seconds.
+## 📊 Key Metrics
+- **Spatial Security:** 100% block rate against simulated GPS spoofing attacks
+- **Latency Target:** Sub-3.5 second end-to-end processing per verification
+- **Accuracy Target:** ≥88% classification accuracy with CLAHE preprocessing
+- **Model Size:** ~3.5M parameters (edge-deployable on mobile CPU)

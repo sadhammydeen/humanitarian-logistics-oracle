@@ -1,23 +1,89 @@
-# Virtual Environments
-venv/
-env/
-.env
+# ────────────────────────────────────────────────────────
+#  HumanAid Oracle — .gitignore
+# ────────────────────────────────────────────────────────
 
-# Python Caches
+# ── Python ──────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
 
-# OS Specific
-.DS_Store
+# ── Virtual Environment ──────────────────────────────────
+venv/
+env/
+.venv/
+ENV/
 
-# Large Data & AI Models
-data/raw/
-data/processed/
+# ── Environment / Secrets ───────────────────────────────
+.env
+.env.*
+*.env
+kaggle.json
+
+# ── Kaggle credentials (never commit!) ──────────────────
+~/.kaggle/
+
+# ── AI Model weights (too large for GitHub) ──────────────
+models/
 *.pt
+*.pth
 *.onnx
 *.weights
+*.h5
+*.pkl
+yolov8n.pt
 
-# React Native / Node
+# ── Dataset / Raw Data ───────────────────────────────────
+data/
+datasets/
+
+# ── IDE / Editor ─────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ───────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Pyre / Type Checkers ─────────────────────────────────
+.pyre/
+.mypy_cache/
+.pytype/
+
+# ── Test Artifacts (keep source, not outputs) ────────────
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ── Jupyter Notebooks ────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb
+
+# ── Logs ─────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Node / React Native ──────────────────────────────────
 node_modules/
 .expo/
+*.tgz
+
+# ── Misc generated ───────────────────────────────────────
+*.bak
+*.tmp
+*.orig
