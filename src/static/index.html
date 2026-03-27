@@ -1,523 +1,477 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HumanAid Oracle</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg:   #0f0d0b; --s1: #161310; --s2: #1c1916; --b: #2b2420; --b2: #3a302a;
-      --t:    #e8e0d5; --m:  #6b5f55; --d:  #3d342e;
-      --or:   #f97316; --am: #f59e0b; --gr: #22c55e;
-      --re:   #ef4444; --bl: #6366f1; --tl: #14b8a6;
-    }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
-    /* ── layout ── */
-    .w{max-width:980px;margin:0 auto;padding:0 20px 60px}
-
-    /* ── nav ── */
-    nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--b);margin-bottom:28px}
-    .logo{font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px}
-    .pulse{width:7px;height:7px;background:var(--gr);border-radius:50%;box-shadow:0 0 0 0 rgba(34,197,94,.4);animation:sonar 2s ease-in-out infinite}
-    @keyframes sonar{0%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
-    .chips{display:flex;gap:6px}
-    .chip{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--s2);border:1px solid var(--b);color:var(--m)}
-
-    /* ── hero (compact) ── */
-    .hero{padding:20px 0 24px;border-bottom:1px solid var(--b);margin-bottom:16px}
-    .hero-inner{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
-    .over{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--or);margin-bottom:10px;display:flex;align-items:center;gap:7px}
-    .over::before{content:'';width:14px;height:1px;background:var(--or)}
-    h1{font-size:clamp(22px,3.5vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
-    h1 em{font-style:normal;color:var(--m);font-weight:300}
-    .hero-desc{font-size:12.5px;color:var(--m);max-width:380px;margin-top:10px;line-height:1.6}
-    .pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px}
-    .pill{font-size:10.5px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid}
-    .po{background:rgba(249,115,22,.09);border-color:rgba(249,115,22,.25);color:#fdba74}
-    .pt{background:rgba(20,184,166,.08);border-color:rgba(20,184,166,.25);color:#5eead4}
-    .pg{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.25);color:#86efac}
-    .pb{background:rgba(99,102,241,.09);border-color:rgba(99,102,241,.25);color:#a5b4fc}
-
-    /* ── stats (right of hero) ── */
-    .stats-col{display:flex;flex-direction:column;gap:8px;min-width:180px}
-    .stat{background:var(--s1);border:1px solid var(--b);border-radius:10px;padding:12px 16px}
-    .stat.t-or{border-left:3px solid var(--or)}
-    .stat.t-tl{border-left:3px solid var(--tl)}
-    .stat.t-gr{border-left:3px solid var(--gr)}
-    .sov{font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--m);margin-bottom:2px}
-    .sv{font-size:17px;font-weight:700;letter-spacing:-.03em}
-    .su{font-size:9.5px;color:var(--m);margin-top:1px}
-
-    /* ── cards ── */
-    .card{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:20px;margin-bottom:10px;transition:border-color .2s}
-    .card:hover{border-color:var(--b2)}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-    @media(max-width:640px){.hero-inner,.grid2{grid-template-columns:1fr}}
-
-    /* ── section labels ── */
-    .sover{font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:3px;display:flex;align-items:center;gap:6px}
-    .sover::before{content:'';width:3px;height:3px;background:var(--or);border-radius:50}
-    .stitle{font-size:14px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px}
-    .sdesc{font-size:11.5px;color:var(--m);line-height:1.55;margin-bottom:14px}
-
-    /* ─────────────────────────────
-       CLAHE
-    ───────────────────────────── */
-    .cdrop{border:1.5px dashed var(--b2);border-radius:9px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(249,115,22,.03)}
-    .cdrop:hover,.cdrop.on{border-color:var(--or);background:rgba(249,115,22,.07)}
-    .cdrop h3{font-size:13px;font-weight:600;margin-bottom:3px}
-    .cdrop p{font-size:11px;color:var(--m)}
-    .ico{font-size:20px;display:block;margin-bottom:7px}
-
-    .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;display:none}
-    .cgrid.on{display:grid;animation:up .3s ease}
-
-    .cframe{border-radius:9px;overflow:hidden;background:#0a0805;border:1px solid var(--b);position:relative;cursor:zoom-in}
-    .cframe img{width:100%;height:200px;object-fit:contain;display:block;transition:height .3s}
-    .cframe.max img{height:420px}
-    .cframe-label{position:absolute;bottom:7px;left:7px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:2px 8px;font-size:9px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.6)}
-    .cframe-badge{position:absolute;top:7px;right:7px;border-radius:4px;padding:2px 8px;font-size:9px;font-weight:600}
-    .badge-raw{background:rgba(107,95,85,.5);color:#bdb0a0}
-    .badge-enh{background:rgba(249,115,22,.25);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
-
-    /* maximize button */
-    .maxbtn{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:2px 8px;font-size:9px;color:rgba(255,255,255,.5);cursor:pointer;font-family:'Inter',sans-serif;transition:color .15s;z-index:2}
-    .maxbtn:hover{color:var(--t)}
-
-    .cload{display:none;text-align:center;padding:14px;color:var(--m);font-size:11.5px}
-    .cload.on{display:block}
-    .spin{display:inline-block;width:12px;height:12px;border:1.5px solid rgba(255,255,255,.12);border-top-color:var(--or);border-radius:50%;animation:rot .6s linear infinite;vertical-align:middle;margin-right:5px}
-    @keyframes rot{to{transform:rotate(360deg)}}
-    @keyframes up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-    /* ─────────────────────────────
-       VERIFICATION card
-    ───────────────────────────── */
-    .formula{background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tl);line-height:1.7;margin-bottom:13px}
-    .formula .cmt{color:var(--d)}
-
-    .irow{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:9px}
-    .f label{display:block;font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--m);margin-bottom:4px}
-    .f input{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:6px;padding:8px 11px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t);outline:none;transition:border-color .15s,box-shadow .15s}
-    .f input:focus{border-color:var(--or);box-shadow:0 0 0 2.5px rgba(249,115,22,.12)}
-
-    .brow{display:flex;gap:7px;margin-bottom:0}
-    .btn{flex:1;padding:9px 12px;border:1px solid transparent;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s;display:flex;align-items:center;justify-content:center;gap:5px}
-    .btn:active{transform:scale(.98)}
-    .btg{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:var(--gr)}
-    .btg:hover{background:rgba(34,197,94,.16)}
-    .btr{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.2);color:var(--re)}
-    .btr:hover{background:rgba(239,68,68,.16)}
-
-    /* verification result panel */
-    .vresult{display:none;margin-top:12px;border-radius:9px;overflow:hidden;border:1px solid var(--b)}
-    .vresult.ok{display:block;border-color:rgba(34,197,94,.25)}
-    .vresult.fail{display:block;border-color:rgba(239,68,68,.25)}
-    .vresult-header{padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
-    .vresult.ok .vresult-header{background:rgba(34,197,94,.08)}
-    .vresult.fail .vresult-header{background:rgba(239,68,68,.08)}
-    .vstatus{font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px}
-    .vstatus.ok{color:var(--gr)}
-    .vstatus.fail{color:var(--re)}
-    .vts{font-size:22px;font-weight:700;letter-spacing:-.04em;color:var(--t)}
-    .vbody{padding:12px 14px;background:var(--s2)}
-    .vrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--b);font-size:12px}
-    .vrow:last-child{border-bottom:none}
-    .vrow-label{color:var(--m)}
-    .vrow-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t);font-weight:500}
-    .vrow-val.ok{color:var(--gr)}
-    .vrow-val.fail{color:var(--re)}
-    .vhash{padding:10px 14px;background:var(--s1);border-top:1px solid var(--b)}
-    .vhash-label{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--m);margin-bottom:4px}
-    .vhash-val{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--m);word-break:break-all;line-height:1.5}
-
-    /* fallback terminal (shows when error) */
-    .term{margin-top:10px;border:1px solid var(--b);border-radius:8px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:11px;display:none}
-    .term.on{display:flex;flex-direction:column}
-    .tbar{background:var(--s2);padding:6px 12px;display:flex;align-items:center;gap:5px;border-bottom:1px solid var(--b);flex-shrink:0}
-    .tdd{width:8px;height:8px;border-radius:50%}
-    .tdd.r{background:#ff5f57}.tdd.a{background:#ffbd2e}.tdd.g{background:#28c940}
-    .troute{margin-left:4px;font-size:10px;color:var(--m);font-family:'Inter',sans-serif}
-    .tbody{padding:11px 13px;color:var(--m);white-space:pre-wrap;line-height:1.75;min-height:60px}
-    .tbody.er{color:#fca5a5}
-
-    /* ─────────────────────────────
-       CLASSIFY card
-    ───────────────────────────── */
-    .drop{border:1.5px dashed var(--b2);border-radius:8px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:9px;background:rgba(99,102,241,.03)}
-    .drop:hover,.drop.on{border-color:var(--bl);background:rgba(99,102,241,.07)}
-    .drop h3{font-size:13px;font-weight:600;margin-bottom:3px}
-    .drop p{font-size:11px;color:var(--m)}
-    .dico{font-size:20px;display:block;margin-bottom:6px}
-
-    /* preview with maximize */
-    .prev{display:none;border-radius:8px;overflow:hidden;margin-bottom:9px;background:#0a0805;position:relative;border:1px solid var(--b);cursor:zoom-in}
-    .prev.on{display:block}
-    .prev.max{cursor:zoom-out}
-    .prev img{width:100%;height:160px;object-fit:contain;display:block;transition:height .3s}
-    .prev.max img{height:340px}
-    .pchg{position:absolute;top:7px;right:7px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.1);color:var(--m);border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;z-index:2}
-    .pchg:hover{color:var(--t)}
-    .pmaxbtn{position:absolute;top:7px;left:7px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);border-radius:5px;padding:3px 8px;font-size:10px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;z-index:2;transition:color .15s}
-    .pmaxbtn:hover{color:var(--t)}
-
-    /* classify results */
-    .res{display:none;margin-bottom:9px}
-    .res.on{display:block;animation:up .25s ease}
-    .ctag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:10px}
-    .cfood{background:rgba(34,197,94,.1);color:var(--gr);border:1px solid rgba(34,197,94,.2)}
-    .cbg{background:rgba(249,115,22,.1);color:var(--or);border:1px solid rgba(249,115,22,.2)}
-    .coth{background:rgba(99,102,241,.1);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
-    .bars{display:flex;flex-direction:column;gap:8px;margin-bottom:9px}
-    .brow2{display:grid;grid-template-columns:70px 1fr 38px;align-items:center;gap:7px}
-    .bl2{font-size:11px;color:var(--m)}
-    .bt{height:3px;background:var(--s2);border-radius:2px;overflow:hidden}
-    .bf{height:100%;border-radius:2px;width:0;transition:width .7s cubic-bezier(.22,1,.36,1)}
-    .bf.fo{background:var(--gr)}
-    .bf.bg{background:var(--or)}
-    .bp{font-size:11px;font-weight:600;color:var(--t);text-align:right;font-variant-numeric:tabular-nums}
-    .imeta{font-size:10.5px;color:var(--d);padding-top:7px;border-top:1px solid var(--b)}
-    .imeta b{color:var(--m);font-weight:500}
-
-    /* ─────────────────────────────
-       LIGHTBOX (fullscreen)
-    ───────────────────────────── */
-    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:1000;cursor:zoom-out;padding:20px}
-    .lightbox.on{display:flex}
-    .lightbox img{max-width:90vw;max-height:88vh;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-    .lb-close{position:absolute;top:14px;right:18px;font-size:22px;color:rgba(255,255,255,.5);cursor:pointer;line-height:1;font-weight:300;transition:color .15s}
-    .lb-close:hover{color:#fff}
-    .lb-label{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 14px;font-size:11px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
-  </style>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HumanAid Oracle | Mission Critical Ops</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#4ae176",
+              "primary-fixed-dim": "#ffb690",
+              "on-primary-container": "#582200",
+              "secondary-fixed": "#71f8e4",
+              "surface-container": "#221f1d",
+              "on-primary-fixed-variant": "#783200",
+              "primary-container": "#f97316",
+              "surface-bright": "#3c3936",
+              "surface-container-low": "#1d1b19",
+              "background": "#151311",
+              "on-primary": "#552100",
+              "secondary-container": "#04b4a2",
+              "on-error-container": "#ffdad6",
+              "on-secondary-container": "#003f38",
+              "surface-tint": "#ffb690",
+              "inverse-on-surface": "#33302d",
+              "surface-container-high": "#2c2927",
+              "outline-variant": "#584237",
+              "surface-container-highest": "#373432",
+              "on-tertiary-container": "#003b16",
+              "on-secondary": "#003731",
+              "on-tertiary-fixed": "#002109",
+              "secondary-fixed-dim": "#4fdbc8",
+              "outline": "#a78b7d",
+              "surface": "#151311",
+              "primary-fixed": "#ffdbca",
+              "surface-variant": "#373432",
+              "on-tertiary": "#003915",
+              "on-surface": "#e8e1dd",
+              "inverse-surface": "#e8e1dd",
+              "inverse-primary": "#9d4300",
+              "error-container": "#93000a",
+              "on-secondary-fixed-variant": "#005048",
+              "tertiary-fixed": "#6bff8f",
+              "surface-dim": "#151311",
+              "on-tertiary-fixed-variant": "#005321",
+              "on-error": "#690005",
+              "on-background": "#e8e1dd",
+              "error": "#ffb4ab",
+              "tertiary-fixed-dim": "#4ae176",
+              "on-secondary-fixed": "#00201c",
+              "secondary": "#4fdbc8",
+              "surface-container-lowest": "#100e0c",
+              "on-surface-variant": "#e0c0b1",
+              "primary": "#ffb690",
+              "tertiary-container": "#00b251",
+              "on-primary-fixed": "#341100"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #151311;
+            color: #e8e1dd;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .oracle-pulse::after {
+            content: '';
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, #4fdbc8, transparent);
+            opacity: 0.3;
+        }
+    </style>
 </head>
-<body>
-
-<!-- Lightbox -->
-<div class="lightbox" id="lb" onclick="closeLb()">
-  <span class="lb-close">✕</span>
-  <img id="lb-img" src="" alt="">
-  <div class="lb-label" id="lb-lbl"></div>
+<body class="bg-background text-on-background selection:bg-primary-container selection:text-on-primary-container oracle-pulse">
+<!-- TopNavBar -->
+<header class="bg-[#151311] fixed top-0 left-0 right-0 z-50 border-b border-[#584237]/30 flex justify-between items-center w-full px-6 h-16">
+<div class="text-xl font-bold text-[#e8e1dd] flex items-center gap-2 after:content-[''] after:w-2 after:h-2 after:bg-[#4ae176] after:rounded-full after:animate-pulse font-['Space_Grotesk'] uppercase tracking-widest text-sm">
+            HumanAid Oracle
+        </div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="bg-[#2c2927] text-[#f97316] px-3 py-1 text-[10px] font-bold tracking-tighter border-l-2 border-[#f97316]">India NGO Pilot</span>
+<span class="bg-[#2c2927] text-[#4fdbc8] px-3 py-1 text-[10px] font-bold tracking-tighter border-l-2 border-[#4fdbc8]">v2.0</span>
+</div>
+<span class="material-symbols-outlined text-outline">circle</span>
+</div>
+</header>
+<div class="flex pt-16 h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-full py-8 w-64 bg-[#1d1b19] border-r border-[#584237]/20 font-['Inter'] font-medium text-sm">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-sm">query_stats</span>
+</div>
+<div>
+<p class="text-on-surface text-xs font-bold font-['Space_Grotesk'] uppercase tracking-widest">System Status</p>
+<p class="text-tertiary text-[10px] flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-tertiary rounded-full animate-pulse"></span>
+                            Operational
+                        </p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 text-[#ffb690] border-l-2 border-[#f97316] bg-[#221f1d] pl-4 py-3 transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span>Terminal</span>
+</a>
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-3 hover:bg-[#2c2927] hover:text-[#e8e1dd] transition-all" href="#">
+<span class="material-symbols-outlined text-sm">inventory_2</span>
+<span>Archive</span>
+</a>
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-3 hover:bg-[#2c2927] hover:text-[#e8e1dd] transition-all" href="#">
+<span class="material-symbols-outlined text-sm">local_shipping</span>
+<span>Logistics</span>
+</a>
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-3 hover:bg-[#2c2927] hover:text-[#e8e1dd] transition-all" href="#">
+<span class="material-symbols-outlined text-sm">query_stats</span>
+<span>Oracle</span>
+</a>
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-3 hover:bg-[#2c2927] hover:text-[#e8e1dd] transition-all" href="#">
+<span class="material-symbols-outlined text-sm">verified_user</span>
+<span>Security</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-4">
+<button class="w-full bg-primary-container text-on-primary-fixed font-bold py-3 text-xs uppercase tracking-widest">Initiate Verification</button>
+<div class="pt-4 border-t border-outline-variant/20">
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-2 hover:text-[#e8e1dd]" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 text-[#a78b7d] pl-4 py-2 hover:text-[#e8e1dd]" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Support</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto bg-background p-8 space-y-12">
+<!-- Hero Section -->
+<section class="grid grid-cols-12 gap-8 items-end">
+<div class="col-span-12 lg:col-span-8">
+<p class="text-primary font-mono text-xs mb-4 tracking-[0.2em] uppercase">Sector 7G // Operational Protocol</p>
+<h1 class="text-6xl font-bold font-headline leading-none text-on-surface mb-6 uppercase tracking-tight">Delivery Verification Intelligence</h1>
+<p class="text-outline max-w-2xl mb-8 leading-relaxed">Advanced geospatial anchoring and visual validation pipeline for NGO food distribution. Utilizing MobileNetV2 architecture with integrated CLAHE LAB contrast enhancement for edge-case environmental lighting.</p>
+<div class="flex flex-wrap gap-3">
+<span class="bg-surface-container-high text-on-surface px-4 py-1.5 font-mono text-[10px] border-l-2 border-primary">MobileNetV2</span>
+<span class="bg-surface-container-high text-on-surface px-4 py-1.5 font-mono text-[10px] border-l-2 border-secondary">CLAHE LAB L*</span>
+<span class="bg-surface-container-high text-on-surface px-4 py-1.5 font-mono text-[10px] border-l-2 border-tertiary">Haversine 50m</span>
+<span class="bg-surface-container-high text-on-surface px-4 py-1.5 font-mono text-[10px] border-l-2 border-outline">SHA-256</span>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-4">
+<div class="bg-surface-container p-4 border-l-2 border-primary">
+<p class="text-outline text-[10px] uppercase font-bold mb-1">Architecture</p>
+<p class="text-on-surface font-mono font-bold">Model=MNV2</p>
+</div>
+<div class="bg-surface-container p-4 border-l-2 border-secondary">
+<p class="text-outline text-[10px] uppercase font-bold mb-1">Geofence</p>
+<p class="text-on-surface font-mono font-bold">Geo Threshold=50m</p>
+</div>
+<div class="bg-surface-container p-4 border-l-2 border-tertiary">
+<p class="text-outline text-[10px] uppercase font-bold mb-1">Performance</p>
+<p class="text-on-surface font-mono font-bold">Latency=&lt;3.5s</p>
+</div>
+</div>
+</section>
+<!-- 01 · Live CLAHE Enhancement Card -->
+<section class="bg-surface-container-low border-l-2 border-primary overflow-hidden">
+<div class="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+<h2 class="font-headline font-bold uppercase tracking-widest text-sm flex items-center gap-3">
+<span class="text-primary">01 ·</span> Live CLAHE on LAB L* Channel
+                    </h2>
+<span class="text-[10px] font-mono text-outline">ENHANCEMENT_ENGINE_V2</span>
+</div>
+<div class="p-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-[10px] uppercase font-bold text-outline">Original RAW</span>
+<button class="material-symbols-outlined text-sm text-outline hover:text-on-surface transition-colors">open_in_full</button>
+</div>
+<div class="aspect-video bg-surface-container border border-dashed border-outline-variant/30 flex items-center justify-center group cursor-pointer relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 grayscale group-hover:opacity-100 transition-opacity" data-alt="Dark, low-contrast aerial photograph of an informal settlement in India with muted colors and heavy shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4QedNB5ILWxiKZjzYxD3oIlf1hfDOs8RiiFw4kH1emaZXgFVwptQOzXlfLP2a01BfW63rW-yDR-WnQn0tfO8-Ypj-bMYDgvEgn6nQ89CfkLqK1QhkTgQn2AHaYoUot6ouHshBbtbpnvxL8r3PJAvQxNNB8GYV5UR1qXkAj4_tq2TGNSLQXs-uHRCGPQ3M7oVJjQxiO6Pms92ZeGyB3_s8rr5j31CFimfVQdrtmZLoNOzg3eM3JuD4UA--pEvWnRHldX87qTCMwgyZ"/>
+<div class="relative z-10 flex flex-col items-center">
+<span class="material-symbols-outlined text-4xl text-outline group-hover:text-primary transition-colors">magnification_small</span>
+<p class="text-[10px] text-outline mt-2 uppercase">Input Stream Alpha</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="text-[10px] uppercase font-bold text-on-surface">CLAHE Enhanced</span>
+<span class="text-[8px] bg-secondary text-on-secondary px-1 font-bold">L* BADGE</span>
+</div>
+<button class="material-symbols-outlined text-sm text-outline hover:text-on-surface transition-colors">open_in_full</button>
+</div>
+<div class="aspect-video bg-surface-container border border-primary/20 flex items-center justify-center relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover contrast-150 saturate-125" data-alt="High contrast, sharp aerial photograph of the same settlement with vivid textures and clearly defined structures enhanced by algorithms" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8vSOWJ54PO6Pq0pd3ZkdpMiNNyunRn9fV3L1zGHmtj0zAdPJUi1hccA1g4Gkk13OkrQV2rNFkSKbOgwcaUaSFOkboRsRwnivwrHoWJR3el42aIV2DLRh7ywh6bUuUY6LzivIHS4quxM5WmELAkZETFqoWrlmzW5vje8vDmj6epm-fBGYim7bLy3B46Xze-sD4UBH7CXAsMAAL0iOqbMfUUYhmBcaS0fByUOLGJRy4sSnhnzKydudAtaGGaAYV8e81-2XyqsQp_csr"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4 font-mono text-[10px] text-primary">
+                                    GRID_REF: 28.6139° N, 77.2090° E
+                                </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Two-Column Row -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- 02 · Geospatial Validation -->
+<section class="bg-surface-container-low border-l-2 border-secondary h-fit">
+<div class="p-6 border-b border-outline-variant/20">
+<h2 class="font-headline font-bold uppercase tracking-widest text-sm">
+<span class="text-secondary">02 ·</span> Geospatial Validation
+                        </h2>
+</div>
+<div class="p-6 space-y-6">
+<div class="bg-surface-container-lowest p-4 border border-secondary/10 font-mono text-xs text-secondary-fixed-dim">
+                            TS = 0.5 × geo_dist + 0.5 × vis_context
+                        </div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-[10px] uppercase font-bold text-outline block mb-2">Latitude</label>
+<input class="w-full bg-transparent border-b border-outline-variant/30 text-on-surface font-mono py-2 focus:border-primary focus:outline-none" placeholder="28.6139" type="text"/>
+</div>
+<div>
+<label class="text-[10px] uppercase font-bold text-outline block mb-2">Longitude</label>
+<input class="w-full bg-transparent border-b border-outline-variant/30 text-on-surface font-mono py-2 focus:border-primary focus:outline-none" placeholder="77.2090" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="bg-tertiary/20 text-tertiary border border-tertiary/30 py-3 font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-tertiary hover:text-on-tertiary-container transition-all">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+                                Valid GPS
+                            </button>
+<button class="bg-error/20 text-error border border-error/30 py-3 font-bold text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-error hover:text-on-error transition-all">
+<span class="material-symbols-outlined text-xs">gpp_bad</span>
+                                Spoof Attack
+                            </button>
+</div>
+<div class="space-y-3 pt-4">
+<div class="flex justify-between text-[10px] font-mono border-b border-outline-variant/10 pb-1">
+<span class="text-outline uppercase">Distance</span>
+<span class="text-on-surface">12.4m</span>
+</div>
+<div class="flex justify-between text-[10px] font-mono border-b border-outline-variant/10 pb-1">
+<span class="text-outline uppercase">Geo Score</span>
+<span class="text-tertiary">0.982</span>
+</div>
+<div class="flex justify-between text-[10px] font-mono border-b border-outline-variant/10 pb-1">
+<span class="text-outline uppercase">Visual Score</span>
+<span class="text-tertiary">0.894</span>
+</div>
+<div class="flex justify-between text-[10px] font-mono border-b border-outline-variant/10 pb-1">
+<span class="text-outline uppercase">Transparency Score</span>
+<span class="text-primary">High Confidence</span>
+</div>
+<div class="flex justify-between text-[10px] font-mono border-b border-outline-variant/10 pb-1">
+<span class="text-outline uppercase">Classification</span>
+<span class="text-secondary font-bold">LEGITIMATE</span>
+</div>
+<div class="flex flex-col gap-1 pt-2">
+<span class="text-[8px] uppercase font-bold text-outline">SHA-256 Hash</span>
+<span class="text-[9px] font-mono text-tertiary truncate">f3e5b12a8c9d0e1f2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 03 · Vision Classification -->
+<section class="bg-surface-container-low border-l-2 border-tertiary flex flex-col">
+<div class="p-6 border-b border-outline-variant/20">
+<h2 class="font-headline font-bold uppercase tracking-widest text-sm">
+<span class="text-tertiary">03 ·</span> Vision Classification
+                        </h2>
+</div>
+<div class="p-6 flex-1 flex flex-col">
+<div class="border-2 border-dashed border-outline-variant/30 p-8 flex flex-col items-center justify-center text-center mb-6 group cursor-pointer hover:border-tertiary/50 transition-colors">
+<span class="material-symbols-outlined text-3xl text-outline mb-3 group-hover:scale-110 transition-transform">upload_file</span>
+<p class="text-[10px] font-bold uppercase text-on-surface">Drag distribution asset here</p>
+<p class="text-[9px] text-outline mt-1 font-mono">JPG, PNG, TIFF &lt; 25MB</p>
+</div>
+<div class="space-y-4 mb-6">
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold uppercase text-on-surface">Food Item Presence</span>
+<span class="text-[10px] font-mono text-tertiary">94.2%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest">
+<div class="h-full bg-tertiary" style="width: 94.2%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold uppercase text-outline">Anomalous Background</span>
+<span class="text-[10px] font-mono text-outline">5.8%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest">
+<div class="h-full bg-outline" style="width: 5.8%"></div>
+</div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest p-4 font-mono text-[10px] text-[#4ae176]/70 overflow-hidden relative">
+<div class="absolute top-2 right-4 text-[8px] text-outline">LIVE_LOG</div>
+<p class="mb-1 text-on-surface">[SYSTEM] Initializing MobileNetV2...</p>
+<p class="mb-1 text-on-surface">[INFO] Weight tensor loaded from local cache.</p>
+<p class="mb-1">[PROC] Running inference on image_v09.raw</p>
+<p class="mb-1 text-secondary">[CALC] Softmax output stabilized at t=1.4s</p>
+<p class="mb-1">[PROC] Validating contrast histogram against baseline</p>
+<p class="mb-1 text-tertiary">[SUCCESS] Category match: AID_KIT_01</p>
+<p class="mb-1 opacity-50">&gt; Listening for new stream...</p>
+</div>
+</div>
+</section>
+</div>
+</main>
 </div>
 
-<div class="w">
-
-  <!-- Nav -->
-  <nav>
-    <div class="logo"><div class="pulse"></div>HumanAid Oracle</div>
-    <div class="chips">
-      <div class="chip">India NGO Pilot</div>
-      <div class="chip">v2.0</div>
-    </div>
-  </nav>
-
-  <!-- Hero (compact, 2-col) -->
-  <div class="hero">
-    <div class="hero-inner">
-      <div>
-        <div class="over">Humanitarian Logistics · AI Verification</div>
-        <h1>Delivery <em>Verification</em><br>Intelligence</h1>
-        <p class="hero-desc">MobileNetV2 with live CLAHE enhancement, Haversine GPS anti-spoofing, and SHA-256 cryptographic non-repudiation.</p>
-        <div class="pills">
-          <span class="pill po">MobileNetV2 · 3.5M</span>
-          <span class="pill pt">CLAHE · LAB L*</span>
-          <span class="pill pg">Haversine · 50m</span>
-          <span class="pill pb">SHA-256 · TS</span>
-        </div>
-      </div>
-      <div class="stats-col">
-        <div class="stat t-or"><div class="sov">Model</div><div class="sv">MNV2</div><div class="su">Edge Device AI</div></div>
-        <div class="stat t-tl"><div class="sov">Geo Threshold</div><div class="sv">50 m</div><div class="su">Haversine</div></div>
-        <div class="stat t-gr"><div class="sov">Latency</div><div class="sv">&lt;3.5s</div><div class="su">Mobile CPU</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── 01 CLAHE ── -->
-  <div class="card">
-    <div class="sover">01 · Low-Light Enhancement</div>
-    <div class="stitle">Live CLAHE on LAB L* Channel</div>
-    <div class="sdesc">Upload any photo to see the exact preprocessing pipeline — CLAHE on the L* channel, preserving hue/saturation while enhancing local contrast. Click any image to view full-screen.</div>
-
-    <div class="cdrop" id="cdrop"
-         onclick="document.getElementById('cin').click()"
-         ondragover="cdv(event,'on')" ondragleave="cdv(event,'off')" ondrop="cdv(event,'drop')">
-      <span class="ico">🔬</span>
-      <h3>Drop or click to upload</h3>
-      <p>See CLAHE enhancement live · JPG or PNG</p>
-    </div>
-    <input type="file" id="cin" accept="image/*" style="display:none" onchange="runClahe(this.files[0])">
-
-    <div class="cload" id="cload"><span class="spin"></span>Applying CLAHE on LAB L* channel...</div>
-
-    <div class="cgrid" id="cgrid">
-      <div class="cframe" id="cf-raw" onclick="openLb('raw-img','Original — RAW')">
-        <button class="maxbtn" onclick="toggleMax(event,'cf-raw')">⤢</button>
-        <img id="raw-img" src="" alt="Original">
-        <div class="cframe-label">Original</div>
-        <div class="cframe-badge badge-raw">RAW</div>
-      </div>
-      <div class="cframe" id="cf-enh" onclick="openLb('enh-img','CLAHE Enhanced — LAB L*')">
-        <button class="maxbtn" onclick="toggleMax(event,'cf-enh')">⤢</button>
-        <img id="enh-img" src="" alt="Enhanced">
-        <div class="cframe-label">CLAHE Enhanced</div>
-        <div class="cframe-badge badge-enh">L* ENHANCED</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── 02 + 03 ── -->
-  <div class="grid2">
-
-    <!-- GPS Verification -->
-    <div class="card" style="margin-bottom:0">
-      <div class="sover">02 · Geospatial Validation</div>
-      <div class="stitle">GPS Anti-Spoofing</div>
-      <div class="sdesc">Haversine great-circle distance vs. registered NGO coordinates. Beyond 50m = blocked.</div>
-
-      <div class="formula">
-        TS = 0.5×geo + 0.5×vis<br>
-        <span class="cmt">// geo = 1.0 if dist ≤ 50m else 0.0</span>
-      </div>
-
-      <div class="irow">
-        <div class="f"><label>Latitude</label><input id="lat" value="12.8237"></div>
-        <div class="f"><label>Longitude</label><input id="lon" value="80.0436"></div>
-      </div>
-
-      <div class="brow">
-        <button class="btn btg" onclick="sendGeo()">✓ Valid GPS</button>
-        <button class="btn btr" onclick="spoofGeo()">⚡ Spoof Attack</button>
-      </div>
-
-      <!-- Rich verification result panel -->
-      <div class="vresult" id="vresult">
-        <div class="vresult-header">
-          <div class="vstatus" id="vstatus">✓ Verified</div>
-          <div class="vts" id="vts">—</div>
-        </div>
-        <div class="vbody">
-          <div class="vrow"><span class="vrow-label">Distance</span><span class="vrow-val" id="vdist">—</span></div>
-          <div class="vrow"><span class="vrow-label">Geo Score</span><span class="vrow-val" id="vgeo">—</span></div>
-          <div class="vrow"><span class="vrow-label">Visual Score</span><span class="vrow-val" id="vvis">—</span></div>
-          <div class="vrow"><span class="vrow-label">Transparency Score</span><span class="vrow-val" id="vtp">—</span></div>
-          <div class="vrow"><span class="vrow-label">Classification</span><span class="vrow-val" id="vcat">—</span></div>
-        </div>
-        <div class="vhash">
-          <div class="vhash-label">SHA-256 Hash</div>
-          <div class="vhash-val" id="vhash">—</div>
-        </div>
-      </div>
-
-      <!-- Error terminal -->
-      <div class="term" id="gterm">
-        <div class="tbar"><div class="tdd r"></div><div class="tdd a"></div><div class="tdd g"></div><span class="troute">POST /verify-delivery</span></div>
-        <div class="tbody er" id="go"></div>
-      </div>
-    </div>
-
-    <!-- Classification -->
-    <div class="card" style="margin-bottom:0">
-      <div class="sover">03 · Vision Classification</div>
-      <div class="stitle">MobileNetV2 Classifier</div>
-      <div class="sdesc">Upload a donation photo. CLAHE preprocessing is applied before inference. Click image to view full-screen.</div>
-
-      <div class="prev" id="prev" onclick="openLb('pimg','Uploaded Donation Image')">
-        <button class="pmaxbtn" onclick="event.stopPropagation();togglePmax()">⤢</button>
-        <button class="pchg" onclick="event.stopPropagation();resetUp()">↺</button>
-        <img id="pimg" src="" alt="">
-      </div>
-
-      <div class="drop" id="dropz"
-           onclick="document.getElementById('fin').click()"
-           ondragover="dv(event,'on')" ondragleave="dv(event,'off')" ondrop="dv(event,'drop')">
-        <span class="dico">📸</span>
-        <h3>Drop or click to upload</h3>
-        <p>CLAHE applied · JPG or PNG</p>
-      </div>
-      <input type="file" id="fin" accept="image/*" style="display:none" onchange="classify(this.files[0])">
-
-      <div class="res" id="res">
-        <div class="ctag cfood" id="ctag">Food</div>
-        <div class="bars">
-          <div class="brow2"><span class="bl2">Food</span><div class="bt"><div class="bf fo" id="bfo"></div></div><span class="bp" id="pfo">—</span></div>
-          <div class="brow2"><span class="bl2">Background</span><div class="bt"><div class="bf bg" id="bbg"></div></div><span class="bp" id="pbg">—</span></div>
-        </div>
-        <div class="imeta"><b>Inference</b> <span id="it">—</span> · <b>Model</b> MobileNetV2 · <b>Pipeline</b> CLAHE→L*</div>
-      </div>
-
-      <div class="term on" id="cterm">
-        <div class="tbar"><div class="tdd r"></div><div class="tdd a"></div><div class="tdd g"></div><span class="troute">POST /classify-image</span></div>
-        <div class="tbody" id="co">Upload an image to classify...</div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- Lightbox -->
+<!-- ── Backend Integration ── -->
 <script>
-function openLb(imgId, label){
-  const src = document.getElementById(imgId).src;
-  if(!src) return;
-  document.getElementById('lb-img').src = src;
-  document.getElementById('lb-lbl').textContent = label;
-  document.getElementById('lb').classList.add('on');
-}
-function closeLb(){ document.getElementById('lb').classList.remove('on'); }
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeLb(); });
-
-/* CLAHE frame maximize */
-function toggleMax(e, frameId){
-  e.stopPropagation();
-  const f = document.getElementById(frameId);
-  const isMax = f.classList.toggle('max');
-  f.querySelector('.maxbtn').textContent = isMax ? '⤡' : '⤢';
-}
-/* Preview maximize */
-function togglePmax(){
-  const p = document.getElementById('prev');
-  p.classList.toggle('max');
-  p.querySelector('.pmaxbtn').textContent = p.classList.contains('max') ? '⤡' : '⤢';
-}
-
-/* CLAHE drag */
-function cdv(e,t){
-  e.preventDefault();
-  const z=document.getElementById('cdrop');
-  if(t==='on') z.classList.add('on');
-  else if(t==='off') z.classList.remove('on');
-  else { z.classList.remove('on'); const f=e.dataTransfer.files[0]; if(f) runClahe(f); }
-}
+/* ─── CLAHE Upload Zone ─── */
+(function(){
+  const dropEl = document.querySelector('[class*="border-dashed"]');
+  const allDrops = document.querySelectorAll('[class*="border-dashed"]');
+  // Wire up the first drop zone (CLAHE section)
+  allDrops.forEach((el,i) => {
+    el.addEventListener('click', () => {
+      const inp = document.createElement('input');
+      inp.type='file'; inp.accept='image/*';
+      inp.onchange = e => i===0 ? runClahe(e.target.files[0]) : classify(e.target.files[0]);
+      inp.click();
+    });
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('border-primary-container'); });
+    el.addEventListener('dragleave', ()=> el.classList.remove('border-primary-container'));
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('border-primary-container');
+      const f = e.dataTransfer.files[0];
+      if(f) i===0 ? runClahe(f) : classify(f);
+    });
+  });
+})();
 
 async function runClahe(file){
   if(!file||!file.type.startsWith('image/')) return;
-  const reader=new FileReader();
-  reader.onload=e=>document.getElementById('raw-img').src=e.target.result;
-  reader.readAsDataURL(file);
-  document.getElementById('cdrop').style.display='none';
-  document.getElementById('cload').classList.add('on');
-  document.getElementById('cgrid').classList.remove('on');
-  const form=new FormData(); form.append('file',file);
-  try{
-    const r=await fetch('/enhance-clahe',{method:'POST',body:form});
-    if(r.ok){
-      const blob=await r.blob();
-      document.getElementById('enh-img').src=URL.createObjectURL(blob);
-      document.getElementById('cgrid').classList.add('on');
-    } else { resetClahe(); }
-  } catch{ resetClahe(); }
-  finally{ document.getElementById('cload').classList.remove('on'); }
-}
-function resetClahe(){
-  document.getElementById('cdrop').style.display='';
-  document.getElementById('cgrid').classList.remove('on');
-  document.getElementById('cin').value='';
-}
-
-/* GPS */
-function spoofGeo(){
-  document.getElementById('lat').value='13.0827';
-  document.getElementById('lon').value='80.2707';
-  sendGeo();
-}
-
-async function sendGeo(){
-  const vr=document.getElementById('vresult');
-  const errTerm=document.getElementById('gterm');
-  vr.className='vresult'; errTerm.classList.remove('on');
-  const body={device_id:'d_'+Date.now(),latitude:+document.getElementById('lat').value,longitude:+document.getElementById('lon').value,timestamp:new Date().toISOString(),image_hash:'sha_'+Math.random().toString(36).slice(2),image_classification:'Food',classification_confidence:.92};
-  try {
-    const r=await fetch('/verify-delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const d=await r.json();
-    if(r.ok){
-      const dist=(d.distance_km*1000).toFixed(0);
-      const ts=d.transparency_score;
-      document.getElementById('vstatus').className='vstatus ok';
-      document.getElementById('vstatus').textContent='✓ Delivery Verified';
-      document.getElementById('vts').textContent='TS '+ts.toFixed(2);
-      document.getElementById('vdist').textContent=dist+' m (≤50m ✓)';
-      document.getElementById('vdist').className='vrow-val ok';
-      document.getElementById('vgeo').textContent=d.geo_score.toFixed(1);
-      document.getElementById('vgeo').className='vrow-val ok';
-      document.getElementById('vvis').textContent=d.visual_score.toFixed(2);
-      document.getElementById('vvis').className='vrow-val';
-      document.getElementById('vtp').textContent=ts.toFixed(2);
-      document.getElementById('vtp').className='vrow-val ok';
-      document.getElementById('vcat').textContent=d.image_classification+' ('+((d.classification_confidence||0)*100).toFixed(1)+'%)';
-      document.getElementById('vcat').className='vrow-val';
-      document.getElementById('vhash').textContent=d.transparency_hash;
-      vr.className='vresult ok';
-    } else {
-      document.getElementById('vstatus').className='vstatus fail';
-      document.getElementById('vstatus').textContent='⚡ GPS Spoofing Detected';
-      document.getElementById('vts').textContent='TS 0.00';
-      document.getElementById('vdist').textContent='Outside 50m zone';
-      document.getElementById('vdist').className='vrow-val fail';
-      document.getElementById('vgeo').textContent='0.0';
-      document.getElementById('vgeo').className='vrow-val fail';
-      document.getElementById('vvis').textContent='—';
-      document.getElementById('vvis').className='vrow-val';
-      document.getElementById('vtp').textContent='0.00';
-      document.getElementById('vtp').className='vrow-val fail';
-      document.getElementById('vcat').textContent='—';
-      document.getElementById('vhash').textContent='Not generated — verification failed';
-      vr.className='vresult fail';
+  // Show originals in the RAW/ENHANCED frames
+  const frames = document.querySelectorAll('.clahe-frame, [data-clahe]');
+  const reader = new FileReader();
+  reader.onload = e => {
+    const rawImgs = document.querySelectorAll('[alt="Original RAW"], [alt="raw"]');
+    rawImgs.forEach(img => img.src = e.target.result);
+    // find first img in clahe section
+    const claheSection = document.querySelector('section');
+    if(claheSection){
+      const imgs = claheSection.querySelectorAll('img');
+      if(imgs[0]) imgs[0].src = e.target.result;
     }
-  } catch{
-    errTerm.classList.add('on');
-    document.getElementById('go').textContent='ERR  Cannot reach server on :8000';
-  }
+  };
+  reader.readAsDataURL(file);
+
+  // POST to backend
+  const form = new FormData(); form.append('file', file);
+  try{
+    const r = await fetch('/enhance-clahe',{method:'POST',body:form});
+    if(r.ok){
+      const blob = await r.blob();
+      const url = URL.createObjectURL(blob);
+      // find enhanced image slot
+      const claheSection = document.querySelector('section');
+      if(claheSection){
+        const imgs = claheSection.querySelectorAll('img');
+        if(imgs[1]) imgs[1].src = url;
+        else if(imgs[0]) { const img2=document.createElement('img'); img2.src=url; imgs[0].after(img2); }
+      }
+    }
+  }catch(e){ console.warn('CLAHE endpoint unavailable'); }
 }
 
-/* Classify drag */
-function dv(e,t){
-  e.preventDefault();
-  const z=document.getElementById('dropz');
-  if(t==='on') z.classList.add('on');
-  else if(t==='off') z.classList.remove('on');
-  else { z.classList.remove('on'); const f=e.dataTransfer.files[0]; if(f) classify(f); }
-}
-function resetUp(){
-  document.getElementById('prev').classList.remove('on','max');
-  document.getElementById('dropz').style.display='';
-  document.getElementById('res').classList.remove('on');
-  document.getElementById('co').className='tbody';
-  document.getElementById('co').textContent='Upload an image to classify...';
-  document.getElementById('fin').value='';
-}
 async function classify(file){
   if(!file) return;
-  const reader=new FileReader();
-  reader.onload=e=>{document.getElementById('pimg').src=e.target.result;document.getElementById('prev').classList.add('on');document.getElementById('dropz').style.display='none';};
-  reader.readAsDataURL(file);
-  const o=document.getElementById('co'),res=document.getElementById('res');
-  res.classList.remove('on'); o.className='tbody'; o.textContent=`Classifying...`;
-  const fd=new FormData(); fd.append('file',file);
+  const logEl = document.querySelector('[class*="LIVE_LOG"]')?.parentElement ||
+                document.querySelector('.font-mono.text-\\[\\#4ae176\\]\\/70');
+  if(logEl) logEl.innerHTML = `<div class="mb-1 text-on-surface">[PROC] Classifying ${file.name}...</div>`;
+
+  const fd = new FormData(); fd.append('file', file);
   try{
-    const r=await fetch('/classify-image',{method:'POST',body:fd});
-    const d=await r.json();
+    const r = await fetch('/classify-image',{method:'POST',body:fd});
+    const d = await r.json();
     if(r.ok){
-      const cat=(d.classification||'other').toLowerCase();
-      const p=d.category_probabilities||{};
-      const fp=((p.food??p.Food??0)*100), bp=((p.background??p.Background??p.Other??0)*100);
-      const tag=document.getElementById('ctag');
-      tag.className='ctag '+(cat==='food'?'cfood':cat.includes('back')?'cbg':'coth');
-      tag.textContent=d.classification;
-      bar('bfo','pfo',fp); bar('bbg','pbg',bp);
-      document.getElementById('it').textContent=d.inference_time_ms+' ms';
-      res.classList.add('on');
-      o.className='tbody ok'; document.getElementById('cterm').classList.add('on');
-      o.textContent=`200 OK — ${d.classification}\nconf  ${((d.confidence||0)*100).toFixed(1)}%\ntime  ${d.inference_time_ms}ms`;
-    } else {
-      o.className='tbody er'; o.textContent=`${r.status} — ${d.detail||'Failed'}`;
+      const p = d.category_probabilities||{};
+      const fp = ((p.food??p.Food??0)*100).toFixed(1);
+      const bp = ((p.background??p.Background??0)*100).toFixed(1);
+      // Update probability bars
+      const bars = document.querySelectorAll('[style*="width:"], [style*="width: "]');
+      if(bars[0]) bars[0].style.width = fp+'%';
+      if(bars[1]) bars[1].style.width = bp+'%';
+      // Update percentages
+      const pcts = document.querySelectorAll('.text-tertiary.font-mono, .text-outline.font-mono');
+      if(pcts[0]) pcts[0].textContent = fp+'%';
+      if(pcts[1]) pcts[1].textContent = bp+'%';
+      if(logEl) logEl.innerHTML = `
+        <div class="mb-1 text-on-surface">[SYSTEM] MobileNetV2 inference complete.</div>
+        <div class="mb-1 text-tertiary">[SUCCESS] Category: ${d.classification}</div>
+        <div class="mb-1 text-secondary">[CALC] Confidence: ${((d.confidence||0)*100).toFixed(1)}%</div>
+        <div class="mb-1">[PERF] Latency: ${d.inference_time_ms}ms</div>
+        <div class="mb-1 opacity-50">> Listening for new stream...</div>`;
     }
-  } catch { o.className='tbody er'; o.textContent='ERR  Cannot reach server on :8000'; }
+  }catch(e){ if(logEl) logEl.innerHTML='<div class="text-error">[ERR] Cannot reach server on :8000</div>'; }
 }
-function bar(fi,pi,p){ document.getElementById(pi).textContent=p.toFixed(1)+'%'; setTimeout(()=>document.getElementById(fi).style.width=p+'%',80); }
+
+/* ─── GPS Verification ─── */
+function wireGPS(){
+  const btns = document.querySelectorAll('button');
+  btns.forEach(btn => {
+    const txt = btn.textContent.trim();
+    if(txt.includes('Valid') || txt.includes('GPS') || txt.includes('Verify')){
+      btn.addEventListener('click', () => sendGeo(false));
+    }
+    if(txt.includes('Spoof') || txt.includes('Attack')){
+      btn.addEventListener('click', () => sendGeo(true));
+    }
+  });
+}
+
+async function sendGeo(spoof){
+  const inputs = document.querySelectorAll('input[type="text"], input:not([type])');
+  let lat = 12.8237, lon = 80.0436;
+  if(inputs[0]) lat = parseFloat(inputs[0].value)||lat;
+  if(inputs[1]) lon = parseFloat(inputs[1].value)||lon;
+  if(spoof){ lat=13.0827; lon=80.2707; if(inputs[0]) inputs[0].value=lat; if(inputs[1]) inputs[1].value=lon; }
+
+  const body={device_id:'d_'+Date.now(),latitude:lat,longitude:lon,timestamp:new Date().toISOString(),image_hash:'sha_'+Math.random().toString(36).slice(2),image_classification:'Food',classification_confidence:.92};
+  try{
+    const r = await fetch('/verify-delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d = await r.json();
+    // Update hash display
+    const hashEls = document.querySelectorAll('.text-tertiary.truncate, .text-\\[\\#4ae176\\].truncate');
+    if(r.ok && d.transparency_hash){
+      hashEls.forEach(el => el.textContent = d.transparency_hash);
+      // Update scores in verification panel
+      const scoreSpans = document.querySelectorAll('.text-secondary.font-bold');
+      if(scoreSpans[0]) scoreSpans[0].textContent = r.ok ? 'VERIFIED' : 'BLOCKED';
+    }
+    console.log('Verify result:', d);
+  }catch(e){ console.warn('GPS endpoint unavailable'); }
+}
+
+document.addEventListener('DOMContentLoaded', wireGPS);
 </script>
-</body>
-</html>
+</body></html>
