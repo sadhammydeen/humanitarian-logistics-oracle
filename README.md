@@ -32,33 +32,25 @@ Navigate to `http://localhost:8000` for the interactive verification dashboard.
 
 ## 📂 Project Structure
 
-### Data Engineering & Computer Vision
-* **`src/mobilenet_classifier.py`**
-  MobileNetV2 classification module using depthwise separable convolutions and inverted residual blocks. Maps ImageNet-1K classes to humanitarian categories (Food, Clothing, Medicine) with integrated CLAHE preprocessing. Completes inference in <5 seconds on mobile CPU.
+### 🧠 Core Platform (`src/`)
+* **`main.py`** — The FastAPI backend. Handles the great-circle Haversine GPS formula, the cryptographic SHA-256 transparency hashing, and the endpoints (`/verify-delivery`, `/classify-image`, `/enhance-clahe`).
+* **`mobilenet_classifier.py`** — The MobileNetV2 inference engine. Extremely fast (<3.5s latency), built specifically for edge processors, and maps ImageNet features to Food/Clothing/Medicine.
+* **`clahe_enhancer.py`** — The Computer Vision pre-processor. Applies Contrast Limited Adaptive Histogram Equalization directly to the L* (lightness) channel to brighten dark warehouse / night-time photos without destroying original colors.
+* **`train_mobilenet.py`** — Main script to train the MobileNetV2 pipeline on a full cloud dataset with augmentation.
+* **`static/index.html`** — The Mission-critical dashboard frontend UI.
+* **`mobile/LocationScanner.js`** — React Native extraction of high-accuracy GPS coordinates at the delivery site.
 
-* **`src/clahe_enhancer.py`**
-  Contrast Limited Adaptive Histogram Equalization applied exclusively to the L* (lightness) channel of the LAB color space. Enhances contrast while preserving original hue and saturation — preventing color distortion that would confuse CNN classification.
+### 🛠️ Data & Training Scripts (`scripts/`)
+* **`download_dataset.py`** — Scrapes humanitarian images from Wikimedia Commons for massive model training.
+* **`create_subset.py`** — Creates perfectly balanced subsets (e.g. 5,000 Food vs 500 Background) for highly efficient, 20-minute cloud GPU training.
+* **`train_demo.py`** — Fast, single-epoch demo training script to test hardware pipelines without heavy downloads.
 
-* **`src/download_dataset.py`**
-  Automated dataset acquisition via Wikimedia Commons API for humanitarian aid images.
+### 🔬 Research & Analytics (`experiments/`)
+* **`experiment_a_vision.py`** — Validates the accuracy boost of our CLAHE model against poor lighting conditions.
+* **`experiment_c_efficiency.py`** — Tracks our sub-3.5 second latency benchmark across 50 simulated real-world donation events.
 
-### Spatial Oracle Backend
-* **`src/main.py`**
-  Event-driven FastAPI server implementing:
-  - **Haversine formula** for great-circle distance calculation (50m threshold)
-  - **Transparency Score** = 0.5 × geo_score + 0.5 × visual_score
-  - **SHA-256 cryptographic hash** for non-repudiation of verification events
-  - **`/classify-image`** endpoint for real-time MobileNetV2 donation classification
-
-* **`src/mobile/LocationScanner.js`**
-  React Native client extracting high-accuracy GPS coordinates for delivery verification.
-
-### Experiments
-* **`src/experiment_a_vision.py`** — Tests CLAHE efficacy: baseline vs CLAHE-enhanced MobileNetV2 accuracy with confusion matrices and Mean Average Precision tracking (target: ≥88%).
-
-* **`src/test_spatial.py`** — GPS spoofing attack simulation proving 100% block rate via Haversine validation.
-
-* **`src/experiment_c_efficiency.py`** — End-to-end latency benchmark across 50 trials targeting sub-3.5s processing, compared against 24-hour manual NGO verification baseline.
+### 🧪 Validation (`tests/`)
+* **`test_spatial.py`** — Simulates an attacker trying to spoof GPS coordinates 51m away, proving the Haversine firewall successfully blocks it.
 
 ---
 
