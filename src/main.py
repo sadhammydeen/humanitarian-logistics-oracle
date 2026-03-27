@@ -26,6 +26,15 @@ app = FastAPI(
     version="2.0.0"
 )
 
+@app.on_event("startup")
+def preload_model():
+    """Preload MobileNetV2 model into memory on worker startup for thread safety/efficiency."""
+    try:
+        from src.mobilenet_classifier import _get_model
+        _get_model()
+    except Exception as e:
+        print(f"Failed to preload model: {e}")
+
 # ─── Redis Connection ─────────────────────────────────────────────────────────
 try:
     redis_client = redis.Redis(
@@ -44,6 +53,8 @@ class DeliveryEvent(BaseModel):
     device_id: str
     latitude: float
     longitude: float
+    target_latitude: float   # Manually entered NGO latitude
+    target_longitude: float  # Manually entered NGO longitude
     timestamp: str
     image_hash: str  # Hash of the captured photo to prove it's uniquely taken
     image_classification: str = "Food"  # MobileNetV2 predicted category
@@ -62,7 +73,7 @@ class DeliveryEvent(BaseModel):
 #
 # Where R = 6,371 km (Earth's mean radius)
 
-def haversine(lat1, lon1, lat2, lon2):
+def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     """
     Calculate the great-circle distance between two points on Earth.
 
@@ -151,9 +162,6 @@ def generate_transparency_hash(event: DeliveryEvent, transparency_score, geo_sco
 
 # ─── API Endpoints ────────────────────────────────────────────────────────────
 
-# Target NGO warehouse coordinates (e.g., SRMIST campus)
-TARGET_LAT = 12.8236
-TARGET_LON = 80.0435
 PROXIMITY_THRESHOLD_KM = 0.05  # 50 meters
 
 
@@ -169,7 +177,12 @@ async def verify_delivery(event: DeliveryEvent):
       3. Generates a SHA-256 cryptographic hash for non-repudiation
       4. Queues the event in Redis for audit trail
     """
-    distance_km = haversine(TARGET_LAT, TARGET_LON, event.latitude, event.longitude)
+    # Calculate distance and format to 3 decimal places (meters) to avoid floating point precision blocks
+    raw_distance = haversine(
+        event.target_latitude, event.target_longitude,
+        event.latitude, event.longitude
+    )
+    distance_km = float(f"{raw_distance:.3f}")
 
     # Calculate Transparency Score
     transparency_score, geo_score, visual_score = calculate_transparency_score(
@@ -271,19 +284,21 @@ async def classify_image_endpoint(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, tmp)
             tmp_path = tmp.name
 
-        # Run MobileNetV2 classification with CLAHE
-        category, confidence, inference_ms, category_probs = run_classification(
-            tmp_path, apply_clahe=True
-        )
-
-        # Clean up temp file
-        os.unlink(tmp_path)
+        try:
+            # Run MobileNetV2 classification with CLAHE
+            category, confidence, inference_ms, category_probs = run_classification(
+                tmp_path, apply_clahe=True
+            )
+        finally:
+            # Clean up temp file safely even if inference crashes
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
 
         return {
             "classification": category,
-            "confidence": round(confidence, 4),
-            "inference_time_ms": round(inference_ms, 1),
-            "category_probabilities": {k: round(v, 4) for k, v in category_probs.items()},
+            "confidence": float(f"{confidence:.4f}"),
+            "inference_time_ms": float(f"{inference_ms:.1f}"),
+            "category_probabilities": {k: float(f"{v:.4f}") for k, v in category_probs.items()},
             "model": "MobileNetV2 (~3.5M parameters)",
             "preprocessing": "CLAHE on LAB L* channel"
         }

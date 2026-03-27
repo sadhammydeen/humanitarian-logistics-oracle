@@ -284,8 +284,12 @@
       </div>
 
       <div class="irow">
-        <div class="f"><label>Latitude</label><input id="lat" value="12.8237"></div>
-        <div class="f"><label>Longitude</label><input id="lon" value="80.0436"></div>
+        <div class="f"><label>Driver Lat</label><input id="lat" value="12.8237"></div>
+        <div class="f"><label>Driver Lon</label><input id="lon" value="80.0436"></div>
+      </div>
+      <div class="irow" style="margin-bottom:14px">
+        <div class="f"><label>NGO Target Lat</label><input id="tlat" value="12.8236"></div>
+        <div class="f"><label>NGO Target Lon</label><input id="tlon" value="80.0435"></div>
       </div>
 
       <div class="brow">
@@ -429,7 +433,17 @@ async function sendGeo(){
   const vr=document.getElementById('vresult');
   const errTerm=document.getElementById('gterm');
   vr.className='vresult'; errTerm.classList.remove('on');
-  const body={device_id:'d_'+Date.now(),latitude:+document.getElementById('lat').value,longitude:+document.getElementById('lon').value,timestamp:new Date().toISOString(),image_hash:'sha_'+Math.random().toString(36).slice(2),image_classification:'Food',classification_confidence:.92};
+  const body={
+    device_id:'d_'+Date.now(),
+    latitude:+document.getElementById('lat').value,
+    longitude:+document.getElementById('lon').value,
+    target_latitude:+document.getElementById('tlat').value,
+    target_longitude:+document.getElementById('tlon').value,
+    timestamp:new Date().toISOString(),
+    image_hash:'sha_'+Math.random().toString(36).slice(2),
+    image_classification:'Food',
+    classification_confidence:.92
+  };
   try {
     const r=await fetch('/verify-delivery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const d=await r.json();
@@ -469,7 +483,7 @@ async function sendGeo(){
     }
   } catch{
     errTerm.classList.add('on');
-    document.getElementById('go').textContent='ERR  Cannot reach server on :8000';
+    document.getElementById('go').textContent='ERR  Cannot reach backend server';
   }
 }
 
@@ -515,7 +529,7 @@ async function classify(file){
     } else {
       o.className='tbody er'; o.textContent=`${r.status} — ${d.detail||'Failed'}`;
     }
-  } catch { o.className='tbody er'; o.textContent='ERR  Cannot reach server on :8000'; }
+  } catch { o.className='tbody er'; o.textContent='ERR  Cannot reach backend server'; }
 }
 function bar(fi,pi,p){ document.getElementById(pi).textContent=p.toFixed(1)+'%'; setTimeout(()=>document.getElementById(fi).style.width=p+'%',80); }
 </script>
